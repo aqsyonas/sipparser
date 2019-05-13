@@ -72,6 +72,8 @@ type SipMsg struct {
 	CallID           string
 	XCallID          string
 	XHeader          []string
+	CHeader          []string
+	ParsCustomerHeaders  map[string]string
 	Cseq             *Cseq
 	CseqMethod       string
 	CseqVal          string
@@ -231,6 +233,13 @@ func (s *SipMsg) addHdr(str string) {
 			for i := range s.XHeader {
 				if s.hdr == s.XHeader[i] {
 					s.XCallID = s.hdrv
+				}
+			}
+		}
+		if len(s.CHeader) > 0 {
+			for i:= range s.CHeader{
+				if s.hdr == s.CHeader[i]{
+					s.ParsCustomerHeaders[s.hdr] = s.hdrv
 				}
 			}
 		}
@@ -636,12 +645,12 @@ func getBody(s *SipMsg) sipParserStateFn {
 	return getHeaders
 }
 
-func ParseMsg(str string, xcid ...string) (s *SipMsg) {
+func ParseMsg(str string, xcid []string, cheader ...string) (s *SipMsg) {
 	headersEnd := strings.Index(str, "\r\n\r\n")
 	if headersEnd == -1 {
 		headersEnd = strings.LastIndex(str, "\r\n")
 	}
-	s = &SipMsg{Msg: str, XHeader: xcid, eof: headersEnd}
+	s = &SipMsg{Msg: str, XHeader: xcid, CHeader: cheader, eof: headersEnd, ParsCustomerHeaders : make(map[string]string)}
 	if s.eof == -1 {
 		s.Error = errors.New("ParseMsg: err parsing msg no SIP eof found")
 		return s
