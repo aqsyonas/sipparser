@@ -73,7 +73,7 @@ type SipMsg struct {
 	XCallID          string
 	XHeader          []string
 	CHeader          []string
-	ParsCustomerHeaders  map[string]string
+	CustomHeader     map[string]string
 	Cseq             *Cseq
 	CseqMethod       string
 	CseqVal          string
@@ -237,9 +237,9 @@ func (s *SipMsg) addHdr(str string) {
 			}
 		}
 		if len(s.CHeader) > 0 {
-			for i:= range s.CHeader{
-				if s.hdr == s.CHeader[i]{
-					s.ParsCustomerHeaders[s.hdr] = s.hdrv
+			for i := range s.CHeader {
+				if s.hdr == s.CHeader[i] {
+					s.CustomHeader[s.hdr] = s.hdrv
 				}
 			}
 		}
@@ -650,7 +650,7 @@ func ParseMsg(str string, xcid []string, cheader ...string) (s *SipMsg) {
 	if headersEnd == -1 {
 		headersEnd = strings.LastIndex(str, "\r\n")
 	}
-	s = &SipMsg{Msg: str, XHeader: xcid, CHeader: cheader, eof: headersEnd, ParsCustomerHeaders : make(map[string]string)}
+	s = &SipMsg{Msg: str, XHeader: xcid, CHeader: cheader, eof: headersEnd, CustomHeader: make(map[string]string)}
 	if s.eof == -1 {
 		s.Error = errors.New("ParseMsg: err parsing msg no SIP eof found")
 		return s
